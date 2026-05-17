@@ -2,31 +2,16 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-function public_path($path = null)
-{
-    return rtrim(app()->basePath('public/' . $path), '/');
+if (!function_exists('public_path')) {
+    function public_path($path = null)
+    {
+        return rtrim(app()->basePath('public/' . $path), '/');
+    }
 }
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
     dirname(__DIR__)
 ))->bootstrap();
-
-if (trim((string) env('APP_KEY', '')) === '') {
-    $envFile = dirname(__DIR__) . '/.env';
-    $newKey = 'base64:' . base64_encode(random_bytes(32));
-    if (is_file($envFile)) {
-        $envRaw = (string) @file_get_contents($envFile);
-        if (preg_match('/^APP_KEY=.*$/m', $envRaw)) {
-            $envRaw = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $newKey, $envRaw);
-        } else {
-            $envRaw .= (str_ends_with($envRaw, "\n") ? '' : "\n") . 'APP_KEY=' . $newKey . "\n";
-        }
-        @file_put_contents($envFile, $envRaw);
-        $_ENV['APP_KEY'] = $newKey;
-        $_SERVER['APP_KEY'] = $newKey;
-        putenv('APP_KEY=' . $newKey);
-    }
-}
 
 date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 
